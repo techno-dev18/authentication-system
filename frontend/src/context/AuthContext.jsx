@@ -17,12 +17,17 @@ export const AuthProvider = ({ children }) => {
 
             const token = localStorage.getItem("token");
 
+            console.log("AUTH CHECK - token:", token ? "FOUND" : "NOT FOUND");
+
             if (!token) {
+                console.log("AUTH CHECK - No token");
                 setLoading(false);
                 return;
             }
 
             try {
+
+                console.log("AUTH CHECK - Calling /auth/me");
 
                 const response = await API.get(
                     "/auth/me",
@@ -33,12 +38,19 @@ export const AuthProvider = ({ children }) => {
                     }
                 );
 
+                console.log("AUTH CHECK - Response:", response.data);
+
                 setUser(response.data);
 
             } catch (error) {
 
-                localStorage.removeItem("token");
+                console.log(
+                    "AUTH CHECK - ERROR:",
+                    error.response?.status,
+                    error.response?.data || error.message
+                );
 
+                localStorage.removeItem("token");
                 setUser(null);
 
             } finally {
@@ -46,12 +58,7 @@ export const AuthProvider = ({ children }) => {
                 setLoading(false);
 
             }
-        };
-
-
-        loadUser();
-
-    }, []);
+        }}, []);
 
 
     // Login function
