@@ -9,6 +9,7 @@ const authRoutes = require("./routes/authRoutes");
 const app = express();
 
 
+
 // Connect database
 connectDB();
 
