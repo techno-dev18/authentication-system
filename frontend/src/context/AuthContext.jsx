@@ -3,13 +3,10 @@ import API from "../api";
 
 export const AuthContext = createContext();
 
-
 export const AuthProvider = ({ children }) => {
 
     const [user, setUser] = useState(null);
-
     const [loading, setLoading] = useState(true);
-
 
     useEffect(() => {
 
@@ -17,17 +14,16 @@ export const AuthProvider = ({ children }) => {
 
             const token = localStorage.getItem("token");
 
-            console.log("AUTH CHECK - token:", token ? "FOUND" : "NOT FOUND");
-
+           
             if (!token) {
-                console.log("AUTH CHECK - No token");
+               
                 setLoading(false);
                 return;
             }
 
             try {
 
-                console.log("AUTH CHECK - Calling /auth/me");
+               
 
                 const response = await API.get(
                     "/auth/me",
@@ -38,17 +34,13 @@ export const AuthProvider = ({ children }) => {
                     }
                 );
 
-                console.log("AUTH CHECK - Response:", response.data);
+              
 
                 setUser(response.data);
 
             } catch (error) {
 
-                console.log(
-                    "AUTH CHECK - ERROR:",
-                    error.response?.status,
-                    error.response?.data || error.message
-                );
+               
 
                 localStorage.removeItem("token");
                 setUser(null);
@@ -58,32 +50,42 @@ export const AuthProvider = ({ children }) => {
                 setLoading(false);
 
             }
-        }}, []);
+        };
+
+        loadUser();
+
+    }, []);
 
 
-    // Login function
-    const login = async (email, password) => {
+ // Login function
+const login = async (email, password) => {
 
-        const response = await API.post(
-            "/auth/login",
-            {
-                email,
-                password
-            }
-        );
+    const response = await API.post(
+        "/auth/login",
+        {
+            email,
+            password
+        }
+    );
 
-        localStorage.setItem(
-            "token",
-            response.data.token
-        );
+    console.log("LOGIN RESPONSE:", response.data);
+    console.log("JWT TOKEN:", response.data.token);
 
-        setUser(response.data.user);
+    localStorage.setItem(
+        "token",
+        response.data.token
+    );
 
-        return response.data;
-    };
+    console.log(
+        "TOKEN AFTER SAVE:",
+        localStorage.getItem("token")
+    );
 
+    setUser(response.data.user);
 
-    // Register function
+    return response.data;
+};
+
     const register = async (name, email, password) => {
 
         const response = await API.post(
@@ -106,18 +108,15 @@ export const AuthProvider = ({ children }) => {
     };
 
 
-    // Logout
     const logout = () => {
 
         localStorage.removeItem("token");
-
         setUser(null);
 
     };
 
 
     return (
-
         <AuthContext.Provider
             value={{
                 user,
@@ -127,10 +126,7 @@ export const AuthProvider = ({ children }) => {
                 logout
             }}
         >
-
             {children}
-
         </AuthContext.Provider>
-
     );
 };
